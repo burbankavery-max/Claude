@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Block & Thread — Printed Goods, Made with Intent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:    #F6F1EC;
+      --cream-dk: #EDE4D9;
+      --ink:      #1A1916;
+      --ink-soft: #3D3A35;
+      --rust:     #A8522A;
+      --rust-lt:  #C4714A;
+      --olive:    #4A5240;
+      --olive-lt: #6B7560;
+      --stone:    #9A9185;
+      --white:    #FDFCFA;
+      --border:   #D9D0C5;
+
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-body:  'Inter', system-ui, sans-serif;
+      --font-alt:   'EB Garamond', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── ANNOUNCEMENT BAR ── */
+    .announce {
+      background: var(--olive);
+      color: var(--cream);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+    .announce a { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--rust); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rust); }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+    .btn-nav {
+      background: var(--ink);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-nav:hover { background: var(--rust); }
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .icon-btn:hover { color: var(--rust); }
+    .hamburger { display: none; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 90vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px 80px 80px;
+      background: var(--cream);
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 24px;
+    }
+    .hero-h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(44px, 5vw, 72px);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      color: var(--rust);
+    }
+    .hero-sub {
+      font-family: var(--font-alt);
+      font-size: 20px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      max-width: 420px;
+      margin-bottom: 44px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border: 2px solid var(--ink);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--rust);
+      border-color: var(--rust);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--ink);
+    }
+    .hero-image {
+      position: relative;
+      overflow: hidden;
+      background: var(--cream-dk);
+    }
+    .hero-image img { transition: transform 6s ease; }
+    .hero-image:hover img { transform: scale(1.04); }
+    .hero-badge {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 18px 24px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .hero-badge strong {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+    .hero-badge span { color: var(--stone); font-size: 12px; }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 16px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-track span {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 48px;
+    }
+    .marquee-track .dot {
+      color: var(--rust-lt);
+      padding: 0;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-header {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 80px 32px 48px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .section-header-left {}
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: clamp(30px, 3.5vw, 48px);
+      font-weight: 500;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+    .section-title em { font-style: italic; color: var(--rust); }
+    .section-link {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+    .section-link:hover { color: var(--rust); }
+
+    /* ── COLLECTIONS GRID ── */
+    .collections-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .collection-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .collection-card .card-img {
+      aspect-ratio: 3/4;
+      background: var(--cream-dk);
+      overflow: hidden;
+    }
+    .collection-card .card-img img {
+      transition: transform 0.6s ease;
+    }
+    .collection-card:hover .card-img img {
+      transform: scale(1.06);
+    }
+    .card-body {
+      padding: 16px 4px 4px;
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+
+    /* ── FEATURE SPLIT ── */
+    .feature-split {
+      background: var(--ink);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 600px;
+    }
+    .feature-split-img {
+      overflow: hidden;
+      background: var(--ink-soft);
+    }
+    .feature-split-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 80px 80px 64px;
+      color: var(--cream);
+    }
+    .feature-split-text .section-label { color: var(--rust-lt); }
+    .feature-split-text .section-title { color: var(--cream); }
+    .feature-split-text p {
+      font-family: var(--font-alt);
+      font-size: 18px;
+      line-height: 1.7;
+      color: #BDB5A8;
+      margin: 24px 0 40px;
+      max-width: 440px;
+    }
+    .btn-cream {
+      display: inline-block;
+      background: var(--cream);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border: 2px solid var(--cream);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      align-self: flex-start;
+    }
+    .btn-cream:hover {
+      background: var(--rust);
+      border-color: var(--rust);
+      color: var(--white);
+    }
+
+    /* ── PRODUCTS GRID ── */
+    .products-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .product-card {
+      cursor: pointer;
+    }
+    .product-card .prod-img {
+      aspect-ratio: 1/1;
+      background: var(--cream-dk);
+      overflow: hidden;
+      position: relative;
+    }
+    .product-card .prod-img img {
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover .prod-img img {
+      transform: scale(1.05);
+    }
+    .prod-tag {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: var(--rust);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+    }
+    .prod-body {
+      padding: 16px 0 4px;
+    }
+    .prod-name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .prod-meta {
+      font-size: 13px;
+      color: var(--stone);
+      margin-bottom: 8px;
+    }
+    .prod-price {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .prod-price .orig {
+      text-decoration: line-through;
+      color: var(--stone);
+      font-weight: 400;
+      margin-right: 8px;
+      font-size: 14px;
+    }
+
+    /* ── STORY SECTION ── */
+    .story {
+      background: var(--cream-dk);
+      padding: 100px 32px;
+    }
+    .story-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .story-inner .section-label { margin-bottom: 20px; }
+    .story-h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(36px, 4vw, 58px);
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+    .story-h2 em { font-style: italic; color: var(--rust); }
+    .story-body {
+      font-family: var(--font-alt);
+      font-size: 20px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      max-width: 680px;
+      margin: 0 auto 40px;
+    }
+
+    /* ── PRESS ── */
+    .press {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 56px 32px;
+    }
+    .press-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .press-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 40px;
+    }
+    .press-quotes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+    }
+    .press-quote {
+      text-align: left;
+      padding: 32px;
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+    .press-quote blockquote {
+      font-family: var(--font-alt);
+      font-size: 17px;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      margin-bottom: 20px;
+    }
+    .press-source {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone);
+    }
+
+    /* ── CATEGORIES STRIP ── */
+    .cats-strip {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 80px 32px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+    .cat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      padding: 24px 16px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      text-align: center;
+    }
+    .cat-item:hover { border-color: var(--border); }
+    .cat-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--cream-dk);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cat-name {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .cat-count {
+      font-size: 12px;
+      color: var(--stone);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── EMAIL SIGNUP ── */
+    .email-signup {
+      background: var(--olive);
+      color: var(--cream);
+      padding: 80px 32px;
+      text-align: center;
+    }
+    .email-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .email-signup .section-label { color: #A8B89E; }
+    .email-h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 500;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 16px 0 12px;
+    }
+    .email-sub {
+      font-size: 16px;
+      color: #BDC9B5;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    .email-form {
+      display: flex;
+      gap: 0;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+    .email-form input {
+      flex: 1;
+      padding: 16px 20px;
+      font-size: 15px;
+      font-family: var(--font-body);
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--cream);
+      outline: none;
+    }
+    .email-form input::placeholder { color: rgba(246,241,236,0.5); }
+    .email-form input:focus { border-color: rgba(255,255,255,0.5); }
+    .email-form button {
+      background: var(--rust);
+      color: var(--white);
+      border: none;
+      padding: 16px 28px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .email-form button:hover { background: var(--rust-lt); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 64px 32px 32px;
+    }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .footer-brand .nav-logo {
+      font-size: 24px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .footer-tagline {
+      font-family: var(--font-alt);
+      font-size: 16px;
+      font-style: italic;
+      color: #8D8479;
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-social a {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .footer-social a:hover {
+      border-color: var(--rust-lt);
+      background: var(--rust);
+    }
+    .footer-col h4 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 20px;
+    }
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-col ul a {
+      font-size: 14px;
+      color: #A09890;
+      transition: color 0.2s;
+    }
+    .footer-col ul a:hover { color: var(--cream); }
+    .footer-bottom {
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: #6A635D;
+      letter-spacing: 0.04em;
+    }
+    .footer-legal {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-legal a {
+      font-size: 12px;
+      color: #6A635D;
+      transition: color 0.2s;
+    }
+    .footer-legal a:hover { color: var(--stone); }
+
+    /* ── PLACEHOLDER IMAGES ── */
+    .ph {
+      width: 100%;
+      height: 100%;
+      background: var(--cream-dk);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--stone);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 20px;
+    }
+    .ph-dark { background: #2A2720; color: #6A635D; }
+
+    /* Color swatches for hero image placeholder */
+    .hero-ph {
+      height: 100%;
+      background: linear-gradient(135deg, #D4C5B0 0%, #C4A882 40%, #A8895E 100%);
+      display: flex;
+      align-items: flex-end;
+      padding: 48px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .collections-grid { grid-template-columns: repeat(2, 1fr); }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .cats-strip { grid-template-columns: repeat(3, 1fr); }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+      }
+      .hamburger span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--ink);
+      }
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+      .hero-text {
+        padding: 60px 32px;
+        order: 2;
+      }
+      .hero-image {
+        order: 1;
+        aspect-ratio: 4/3;
+        height: auto;
+      }
+      .feature-split {
+        grid-template-columns: 1fr;
+      }
+      .feature-split-img { aspect-ratio: 4/3; }
+      .feature-split-text { padding: 60px 32px; }
+      .collections-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .products-grid { grid-template-columns: 1fr; }
+      .cats-strip { grid-template-columns: repeat(2, 1fr); }
+      .press-quotes { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .email-form { flex-direction: column; }
+      .email-form input, .email-form button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ANNOUNCEMENT BAR -->
+  <div class="announce">
+    Free shipping on orders over $50 &nbsp;·&nbsp; New arrivals every Thursday &nbsp;·&nbsp; <a href="#">Shop the latest drop →</a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Block <span>&</span> Thread</a>
+      <ul class="nav-links">
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">Collections</a></li>
+        <li><a href="#">Home Goods</a></li>
+        <li><a href="#">Apparel</a></li>
+        <li><a href="#">Our Story</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </button>
+        <button class="btn-nav">Shop Now</button>
+        <button class="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-eyebrow">Designed &amp; Printed with Care</p>
+      <h1 class="hero-h1">
+        Goods made to<br />
+        <em>live with,</em><br />
+        not just look at.
+      </h1>
+      <p class="hero-sub">
+        Original prints on tees, totes, pillows, and more —
+        each design rooted in texture, pattern, and the kind of
+        quiet beauty you want around every day.
+      </p>
+      <div class="hero-ctas">
+        <a href="#" class="btn-primary">Shop All Prints</a>
+        <a href="#" class="btn-ghost">View Collections</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-ph"></div>
+      <div class="hero-badge">
+        <strong>New Drop — Spring '26</strong>
+        <span>The Woven Botanicals Collection</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Original Artwork</span><span class="dot">✦</span>
+      <span>Print on Demand</span><span class="dot">✦</span>
+      <span>Ethically Produced</span><span class="dot">✦</span>
+      <span>Ships in 3–5 Days</span><span class="dot">✦</span>
+      <span>Every Order Unique</span><span class="dot">✦</span>
+      <span>Designed in-House</span><span class="dot">✦</span>
+      <span>100% Satisfaction</span><span class="dot">✦</span>
+      <!-- duplicate for seamless loop -->
+      <span>Original Artwork</span><span class="dot">✦</span>
+      <span>Print on Demand</span><span class="dot">✦</span>
+      <span>Ethically Produced</span><span class="dot">✦</span>
+      <span>Ships in 3–5 Days</span><span class="dot">✦</span>
+      <span>Every Order Unique</span><span class="dot">✦</span>
+      <span>Designed in-House</span><span class="dot">✦</span>
+      <span>100% Satisfaction</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- COLLECTIONS -->
+  <div class="section-header">
+    <div class="section-header-left">
+      <p class="section-label">Shop by Collection</p>
+      <h2 class="section-title">Every design has<br /><em>a story behind it.</em></h2>
+    </div>
+    <a href="#" class="section-link">View All Collections →</a>
+  </div>
+  <div class="collections-grid">
+    <div class="collection-card">
+      <div class="card-img">
+        <div class="ph">Woven Botanicals<br/>Collection</div>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Spring '26</p>
+        <h3 class="card-title">Woven Botanicals</h3>
+        <p class="card-desc">Pressed-flower patterns reimagined as repeat prints — soft, layered, alive.</p>
+      </div>
+    </div>
+    <div class="collection-card">
+      <div class="card-img">
+        <div class="ph">Block Print<br/>Classics</div>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Signature</p>
+        <h3 class="card-title">Block Print Classics</h3>
+        <p class="card-desc">Hand-drawn stamp-style motifs with the feel of a studio print, every time.</p>
+      </div>
+    </div>
+    <div class="collection-card">
+      <div class="card-img">
+        <div class="ph">Stitch &amp; Grain<br/>Collection</div>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Year-Round</p>
+        <h3 class="card-title">Stitch &amp; Grain</h3>
+        <p class="card-desc">Textile-inspired linework — woven grids, linen textures, natural palette.</p>
+      </div>
+    </div>
+    <div class="collection-card">
+      <div class="card-img">
+        <div class="ph">The Home<br/>Edit</div>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Home Goods</p>
+        <h3 class="card-title">The Home Edit</h3>
+        <p class="card-desc">Pillows, totes, and wall art that make a room feel curated without trying.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE SPLIT — APPAREL -->
+  <div class="feature-split">
+    <div class="feature-split-img">
+      <div class="ph ph-dark" style="height:100%">Apparel Lifestyle Photo</div>
+    </div>
+    <div class="feature-split-text">
+      <p class="section-label">Wearable Art</p>
+      <h2 class="section-title">Prints you'll actually<br /><em>want to wear.</em></h2>
+      <p>
+        Every tee, crewneck, and hat starts with original artwork — no stock vectors,
+        no borrowed patterns. Just designs that feel like something you found, not something
+        you bought.
+      </p>
+      <a href="#" class="btn-cream">Shop Apparel</a>
+    </div>
+  </div>
+
+  <!-- PRODUCT GRID — BESTSELLERS -->
+  <div class="section-header">
+    <div class="section-header-left">
+      <p class="section-label">Most Loved</p>
+      <h2 class="section-title">Bestsellers</h2>
+    </div>
+    <a href="#" class="section-link">Shop All →</a>
+  </div>
+  <div class="products-grid">
+    <div class="product-card">
+      <div class="prod-img">
+        <div class="ph">Block Print Tote<br/>Natural Canvas</div>
+        <span class="prod-tag">Bestseller</span>
+      </div>
+      <div class="prod-body">
+        <p class="prod-meta">Totes &amp; Bags</p>
+        <h3 class="prod-name">Block Print Market Tote</h3>
+        <p class="prod-price">$28</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="prod-img">
+        <div class="ph">Botanical Throw<br/>Pillow</div>
+        <span class="prod-tag">New</span>
+      </div>
+      <div class="prod-body">
+        <p class="prod-meta">Home Goods</p>
+        <h3 class="prod-name">Woven Botanical Pillow</h3>
+        <p class="prod-price">$42</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="prod-img">
+        <div class="ph">Graphic Tee<br/>Heavyweight Cotton</div>
+      </div>
+      <div class="prod-body">
+        <p class="prod-meta">Apparel</p>
+        <h3 class="prod-name">Stamp &amp; Grain Tee</h3>
+        <p class="prod-price"><span class="orig">$38</span>$28</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="prod-img">
+        <div class="ph">Art Print<br/>8×10 / 5×7</div>
+      </div>
+      <div class="prod-body">
+        <p class="prod-meta">Wall Art</p>
+        <h3 class="prod-name">Linework Botanical Print</h3>
+        <p class="prod-price">From $18</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="prod-img">
+        <div class="ph">Crewneck<br/>Sweatshirt</div>
+        <span class="prod-tag">New</span>
+      </div>
+      <div class="prod-body">
+        <p class="prod-meta">Apparel</p>
+        <h3 class="prod-name">Block Print Crewneck</h3>
+        <p class="prod-price">$58</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="prod-img">
+        <div class="ph">Mug<br/>15 oz Ceramic</div>
+      </div>
+      <div class="prod-body">
+        <p class="prod-meta">Home Goods</p>
+        <h3 class="prod-name">Stitch Pattern Mug</h3>
+        <p class="prod-price">$22</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORY -->
+  <section class="story">
+    <div class="story-inner">
+      <p class="section-label">Our Story</p>
+      <h2 class="story-h2">Started small.<br /><em>Still made with care.</em></h2>
+      <p class="story-body">
+        Block &amp; Thread grew out of a love for pattern, texture, and the handmade feel you
+        don't always find in mass-produced goods. Every design is drawn by hand before it
+        ever becomes a product — and that's not changing. We started on Etsy, and we're
+        building something bigger here, but the work stays the same.
+      </p>
+      <a href="#" class="btn-primary">Read Our Story</a>
+    </div>
+  </section>
+
+  <!-- SHOP BY CATEGORY -->
+  <div class="section-header" style="padding-bottom: 24px;">
+    <div class="section-header-left">
+      <p class="section-label">Browse</p>
+      <h2 class="section-title">Shop by Category</h2>
+    </div>
+  </div>
+  <div class="cats-strip">
+    <div class="cat-item">
+      <div class="cat-icon"><div class="ph" style="font-size:10px">Tees</div></div>
+      <p class="cat-name">Tees</p>
+      <p class="cat-count">24 items</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon"><div class="ph" style="font-size:10px">Totes</div></div>
+      <p class="cat-name">Totes &amp; Bags</p>
+      <p class="cat-count">12 items</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon"><div class="ph" style="font-size:10px">Home</div></div>
+      <p class="cat-name">Home Goods</p>
+      <p class="cat-count">18 items</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon"><div class="ph" style="font-size:10px">Prints</div></div>
+      <p class="cat-name">Wall Art</p>
+      <p class="cat-count">31 items</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon"><div class="ph" style="font-size:10px">Gifts</div></div>
+      <p class="cat-name">Gifts</p>
+      <p class="cat-count">16 items</p>
+    </div>
+  </div>
+
+  <!-- PRESS / SOCIAL PROOF -->
+  <div class="press">
+    <div class="press-inner">
+      <p class="press-label">What People Are Saying</p>
+      <div class="press-quotes">
+        <div class="press-quote">
+          <blockquote>"The tote I ordered is genuinely one of the most-complimented things I own. The print quality is exceptional."</blockquote>
+          <p class="press-source">— Verified Etsy Buyer, ★★★★★</p>
+        </div>
+        <div class="press-quote">
+          <blockquote>"Everything arrived beautifully packaged and faster than expected. The botanical pillow is exactly as pictured."</blockquote>
+          <p class="press-source">— Verified Etsy Buyer, ★★★★★</p>
+        </div>
+        <div class="press-quote">
+          <blockquote>"I've ordered three times now. The designs are original and the quality never disappoints. My new favorite shop."</blockquote>
+          <p class="press-source">— Verified Etsy Buyer, ★★★★★</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMAIL SIGNUP -->
+  <section class="email-signup">
+    <div class="email-inner">
+      <p class="section-label">Stay in the Loop</p>
+      <h2 class="email-h2">New prints, drops &amp; offers — first to your inbox.</h2>
+      <p class="email-sub">No spam. Just new work when it's ready, and the occasional discount for sticking around.</p>
+      <form class="email-form" onsubmit="return false;">
+        <input type="email" placeholder="your@email.com" aria-label="Email address" />
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="nav-logo">Block <span style="color:var(--rust-lt)">&</span> Thread</span>
+          <p class="footer-tagline">Original prints. Honest goods.<br />Made to live with, not just look at.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" aria-label="Pinterest">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.87 6.39 9.29-.09-.78-.17-1.98.04-2.83.18-.77 1.22-5.17 1.22-5.17s-.31-.63-.31-1.56c0-1.46.85-2.55 1.9-2.55.9 0 1.33.67 1.33 1.48 0 .9-.57 2.25-.87 3.5-.25 1.04.52 1.88 1.54 1.88 1.84 0 3.08-2.37 3.08-5.18 0-2.14-1.44-3.64-3.5-3.64-2.38 0-3.78 1.79-3.78 3.64 0 .72.28 1.49.62 1.91.07.08.08.15.06.23l-.23.95c-.04.15-.12.18-.28.11-1.04-.49-1.69-2.02-1.69-3.25 0-2.64 1.92-5.07 5.54-5.07 2.91 0 5.17 2.07 5.17 4.84 0 2.89-1.82 5.21-4.34 5.21-.85 0-1.65-.44-1.92-.96l-.52 1.96c-.19.72-.7 1.62-1.04 2.17.78.24 1.61.37 2.47.37 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            </a>
+            <a href="#" aria-label="TikTok">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+            </a>
+            <a href="#" aria-label="Etsy">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><text y="14" font-size="12" font-weight="bold">E</text></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="#">All Products</a></li>
+            <li><a href="#">New Arrivals</a></li>
+            <li><a href="#">Bestsellers</a></li>
+            <li><a href="#">On Sale</a></li>
+            <li><a href="#">Gift Cards</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Collections</h4>
+          <ul>
+            <li><a href="#">Woven Botanicals</a></li>
+            <li><a href="#">Block Print Classics</a></li>
+            <li><a href="#">Stitch &amp; Grain</a></li>
+            <li><a href="#">The Home Edit</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="#">Our Story</a></li>
+            <li><a href="#">Shipping &amp; Returns</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Etsy Shop</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Block &amp; Thread. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Accessibility</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
