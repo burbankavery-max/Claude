@@ -478,6 +478,7 @@ def cmd_run(args):
     wd_cats = tuple(k.lower() for k in
                     cfg.get("match", {}).get("workday_category_keywords", ["product"]))
 
+    raw_uids = set()   # everything seen on a board, before filtering
     jobs = []
     for tok, name in boards_cfg.get("greenhouse", {}).items():
         jobs.append(("Greenhouse", tok, name, lambda t=tok, n=name: fetch_greenhouse(t, n)))
@@ -503,6 +504,7 @@ def cmd_run(args):
     with ThreadPoolExecutor(12) as ex:
         for (ats, tok, name, _), posts, err in ex.map(work, jobs):
             kept = []
+            raw_uids.update(p["uid"] for p in posts)
             for p in posts:
                 ok, _why = match(p)
                 if ok:
@@ -553,6 +555,11 @@ def cmd_run(args):
     closed = []
     for uid, rec in known.items():
         if uid in live_uids:
+            continue
+        # Still on the board, just no longer matching — usually because the
+        # filters in config.json changed. Not a closure, so don't report it
+        # as one; leave it in state in case it drops off for real later.
+        if uid in raw_uids:
             continue
         if uid in edits:
             for c in TRACK:

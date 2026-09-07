@@ -29,7 +29,7 @@ Open **`Job Tracker.xlsx`**.
 |---|---|
 | **Active** | Every currently-live match. The first four columns are yours. |
 | **New This Run** | Only what appeared since the last run — the daily read. |
-| **Closed** | Postings that have disappeared, with how many days they stayed up. |
+| **Closed** | Postings that have gone from the board, with how many days they stayed up. |
 | **Boards** | Every board polled, how many postings it had, how many matched, and any errors. |
 | **Search Queries** | Your original Google operators, with a rolling `after:` date, as clickable links. |
 | **Run Log** | Counts from the last run. |
@@ -48,6 +48,11 @@ as a deliberate edit rather than reverting to what was there before.
 The workbook is the source of truth for those four columns; `state.json` is just
 the durable copy behind it. If you ever want to wipe your tracking, edit the
 sheet, not the JSON.
+
+A posting that stops matching because you changed a filter is not treated as
+closed — it is checked against the raw board listing first, so only reqs that
+have actually come down are reported. The exception is Workday, where the fetch
+is windowed: a still-live req older than the window can look closed.
 
 ## Automating it
 
