@@ -1,0 +1,7 @@
+.venv/
+state.json
+run.log
+launchd.out
+launchd.err
+*.xlsx
+~$*

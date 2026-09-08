@@ -1,0 +1,186 @@
+{
+  "match": {
+    "title_include": [
+      "product manager",
+      "product management",
+      "product owner",
+      "product lead",
+      "manager, product",
+      "manager - product",
+      "director, product",
+      "director of product",
+      "head of product",
+      "vp of product",
+      "vp, product",
+      "product strategy"
+    ],
+    "title_exclude": [
+      "intern",
+      "internship",
+      "co-op",
+      "apprentice",
+      "trainee",
+      "program manager",
+      "project manager",
+      "technical program",
+      "scrum master",
+      "product marketing",
+      "product support",
+      "product design",
+      "product designer",
+      "recruiter",
+      "analyst",
+      "data scientist",
+      "engineering manager",
+      "design manager"
+    ],
+    "locations_any": [
+      "remote",
+      "anywhere",
+      "distributed",
+      "virtual",
+      "telecommute",
+      "work at home",
+      "work from home",
+      "home office",
+      "nationwide",
+      "multiple locations",
+      "minneapolis",
+      "st. paul",
+      "saint paul",
+      "minnesota",
+      ", mn",
+      "mn -",
+      "twin cities",
+      "united states",
+      "usa"
+    ],
+    "keywords_any": [],
+    "max_age_days": 45,
+    "workday_category_keywords": [
+      "product"
+    ]
+  },
+  "boards": {
+    "greenhouse": {
+      "airtable": "Airtable",
+      "brex": "Brex",
+      "carta": "Carta",
+      "cloverhealth": "Clover Health",
+      "databricks": "Databricks",
+      "doximity": "Doximity",
+      "elationhealth": "Elation Health",
+      "figma": "Figma",
+      "flatironhealth": "Flatiron Health",
+      "garnerhealth": "Garner Health",
+      "gusto": "Gusto",
+      "healthjoy": "HealthJoy",
+      "healthverity": "HealthVerity",
+      "jamf": "Jamf",
+      "komodohealth": "Komodo Health",
+      "mavenclinic": "Maven Clinic",
+      "mercury": "Mercury",
+      "modernhealth": "Modern Health",
+      "natera": "Natera",
+      "omadahealth": "Omada Health",
+      "papa": "Papa",
+      "polaris": "Polaris",
+      "sezzle": "Sezzle",
+      "stripe": "Stripe",
+      "suki": "Suki AI",
+      "talkspace": "Talkspace",
+      "tia": "Tia",
+      "truveta": "Truveta",
+      "zocdoc": "Zocdoc",
+      "anthropic": "Anthropic"
+    },
+    "lever": {
+      "aledade": "Aledade",
+      "arcadia": "Arcadia",
+      "canvasmedical": "Canvas Medical",
+      "includedhealth": "Included Health",
+      "palantir": "Palantir",
+      "redoxengine": "Redox",
+      "ro": "Ro",
+      "swordhealth": "Sword Health"
+    },
+    "ashby": {
+      "abridge": "Abridge",
+      "ambiencehealthcare": "Ambience Healthcare",
+      "candidhealth": "Candid Health",
+      "cedar": "Cedar",
+      "commure": "Commure",
+      "gravie": "Gravie",
+      "hazel": "Hazel Health",
+      "headway": "Headway",
+      "nabla": "Nabla",
+      "notion": "Notion",
+      "plaid": "Plaid",
+      "ramp": "Ramp",
+      "sondermind": "SonderMind",
+      "trustedhealth": "Trusted Health",
+      "virtahealth": "Virta Health",
+      "openai": "OpenAI"
+    },
+    "workday": {
+      "cvshealth": {
+        "name": "CVS Health",
+        "dc": 1,
+        "site": "CVS_Health_Careers"
+      },
+      "target": {
+        "name": "Target",
+        "dc": 5,
+        "site": "targetcareers"
+      },
+      "medtronic": {
+        "name": "Medtronic",
+        "dc": 1,
+        "site": "medtroniccareers"
+      },
+      "cigna": {
+        "name": "Cigna / Evernorth",
+        "dc": 5,
+        "site": "cignacareers"
+      },
+      "humana": {
+        "name": "Humana",
+        "dc": 5,
+        "site": "Humana_External_Career_Site"
+      },
+      "centene": {
+        "name": "Centene",
+        "dc": 5,
+        "site": "CENTENE_External"
+      },
+      "hcsc": {
+        "name": "HCSC",
+        "dc": 1,
+        "site": "HCSC_External"
+      },
+      "usbank": {
+        "name": "U.S. Bank",
+        "dc": 1,
+        "site": "US_Bank_Careers"
+      },
+      "ecolab": {
+        "name": "Ecolab",
+        "dc": 1,
+        "site": "ECOLAB_External"
+      },
+      "thomsonreuters": {
+        "name": "Thomson Reuters",
+        "dc": 5,
+        "site": "External_Career_Site"
+      }
+    }
+  },
+  "google_queries": [
+    "site:myworkdayjobs.com \"product manager\" (remote OR minneapolis)",
+    "site:job-boards.greenhouse.io \"product manager\"",
+    "site:boards.greenhouse.io \"product manager\"",
+    "site:jobs.lever.co \"product manager\"",
+    "site:jobs.ashbyhq.com \"product manager\"",
+    "(site:myworkdayjobs.com OR site:job-boards.greenhouse.io OR site:jobs.lever.co OR site:jobs.ashbyhq.com) \"senior product manager\" healthcare -intern -director"
+  ]
+}
