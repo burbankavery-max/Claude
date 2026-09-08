@@ -432,13 +432,14 @@ def write_workbook(active, closed, boards, cfg, stats):
 
     # ---- Closed ------------------------------------------------------
     style_sheet(wb.create_sheet("Closed"),
-                TRACK + ["Title", "Company", "Location", "First Seen",
+                TRACK + ["Title", "Company", "Location", "Reason", "First Seen",
                          "Last Seen", "Days Live", "Source", "Link", "UID"],
-                [13, 9, 12, 30, 46, 24, 30, 11, 11, 10, 12, 14, 40],
+                [13, 9, 12, 30, 46, 24, 30, 22, 11, 11, 10, 12, 14, 40],
                 [[c.get("Status", ""), c.get("Priority", ""), c.get("Applied On", ""),
                   c.get("Notes", ""), c["title"], c["company"], c["location"],
-                  c["first_seen"], c["last_seen"], c.get("days_live", ""),
-                  c["source"], c["url"], c["uid"]] for c in closed],
+                  c.get("reason", ""), c["first_seen"], c["last_seen"],
+                  c.get("days_live", ""), c["source"], c["url"], c["uid"]]
+                 for c in closed],
                 link_col="Link")
 
     # ---- Boards ------------------------------------------------------
@@ -478,7 +479,7 @@ def cmd_run(args):
     wd_cats = tuple(k.lower() for k in
                     cfg.get("match", {}).get("workday_category_keywords", ["product"]))
 
-    raw_uids = set()   # everything seen on a board, before filtering
+    raw_by_uid = {}    # everything seen on a board, before filtering
     jobs = []
     for tok, name in boards_cfg.get("greenhouse", {}).items():
         jobs.append(("Greenhouse", tok, name, lambda t=tok, n=name: fetch_greenhouse(t, n)))
@@ -504,7 +505,8 @@ def cmd_run(args):
     with ThreadPoolExecutor(12) as ex:
         for (ats, tok, name, _), posts, err in ex.map(work, jobs):
             kept = []
-            raw_uids.update(p["uid"] for p in posts)
+            for p in posts:
+                raw_by_uid[p["uid"]] = p
             for p in posts:
                 ok, _why = match(p)
                 if ok:
@@ -552,15 +554,24 @@ def cmd_run(args):
             p[c] = rec[c]
 
     # anything previously live and now gone
+    max_age = int(cfg.get("match", {}).get("max_age_days", 45))
     closed = []
     for uid, rec in known.items():
         if uid in live_uids:
             continue
-        # Still on the board, just no longer matching — usually because the
-        # filters in config.json changed. Not a closure, so don't report it
-        # as one; leave it in state in case it drops off for real later.
-        if uid in raw_uids:
-            continue
+        raw = raw_by_uid.get(uid)
+        if raw is not None:
+            # Still on the board. Either it aged past the freshness window --
+            # worth recording, since the req is genuinely still open -- or the
+            # filters changed, which is not a departure and is not reported.
+            _ok, why = match(raw)
+            if why != "stale":
+                continue
+            reason = "Aged out (>%d days)" % max_age
+        else:
+            reason = "Removed from board"
+        # Keep whichever reason applied when it first left the Active tab.
+        rec.setdefault("closed_reason", reason)
         if uid in edits:
             for c in TRACK:
                 if c in edits[uid]:
@@ -572,7 +583,8 @@ def cmd_run(args):
         except Exception:                             # noqa: BLE001
             pass
         closed.append({**rec, "uid": uid, "days_live": days,
-                       "first_seen": fs, "last_seen": ls})
+                       "first_seen": fs, "last_seen": ls,
+                       "reason": rec.get("closed_reason", "")})
     closed.sort(key=lambda c: c.get("last_seen", ""), reverse=True)
 
     active = sorted(deduped, key=lambda p: (p["posted"] or dt.date(1970, 1, 1)), reverse=True)
@@ -585,7 +597,10 @@ def cmd_run(args):
         "Postings scanned": sum(b[3] for b in board_rows),
         "Matching (after de-dupe)": len(active),
         "New since last run": new_count,
-        "Closed / removed": len(closed),
+        "Closed - removed from board":
+            sum(1 for c in closed if c.get("reason", "").startswith("Removed")),
+        "Closed - aged out":
+            sum(1 for c in closed if c.get("reason", "").startswith("Aged")),
         "Previous run": state.get("last_run") or "first run",
     }
     board_rows.sort(key=lambda b: (-b[4], b[0].lower()))

@@ -221,7 +221,7 @@ function collectSimpleBoards_() {
       req: getReq_('https://api.ashbyhq.com/posting-api/job-board/' + tok) });
   });
 
-  var postings = [], boardRows = [], rawUids = {};
+  var postings = [], boardRows = [], rawByUid = {};
   fetchAllJson_(reqs).forEach(function (r) {
     var m = r.meta, list = [];
     if (r.data) {
@@ -229,12 +229,12 @@ function collectSimpleBoards_() {
       else if (m.ats === 'Lever') list = normLever_(r.data, m);
       else list = normAshby_(r.data, m);
     }
-    list.forEach(function (p) { rawUids[p.uid] = 1; });
+    list.forEach(function (p) { rawByUid[p.uid] = p; });
     var kept = list.filter(matches_);
     postings = postings.concat(kept);
     boardRows.push([m.name, m.ats, m.tok, list.length, kept.length, r.err || 'ok']);
   });
-  return { postings: postings, boardRows: boardRows, rawUids: rawUids };
+  return { postings: postings, boardRows: boardRows, rawByUid: rawByUid };
 }
 
 function normGreenhouse_(d, m) {
@@ -372,7 +372,20 @@ function collectWorkday_() {
   });
   var rawUids = {};
   Object.keys(seen).forEach(function (uid) { rawUids[uid] = 1; });
-  return { postings: postings, boardRows: boardRows, rawUids: rawUids };
+  return { postings: postings, boardRows: boardRows, rawByUid: rawByUid };
+}
+
+/**
+ * Why a posting left the Active tab, or null if it did not really leave.
+ * Something still on the board that merely stopped matching is a filter
+ * change, not a departure, and is not reported.
+ */
+function departureReason_(raw) {
+  if (!raw) return 'Removed from board';
+  if (raw.posted && daysBetween_(today_(), raw.posted) > CFG.maxAgeDays) {
+    return 'Aged out (>' + CFG.maxAgeDays + ' days)';
+  }
+  return null;
 }
 
 // ----------------------------------------------------------------- sheet io
@@ -443,8 +456,8 @@ function refresh() {
   var wd = collectWorkday_();
   var all = simple.postings.concat(wd.postings);
   var boardRows = simple.boardRows.concat(wd.boardRows);
-  var rawUids = simple.rawUids;
-  Object.keys(wd.rawUids).forEach(function (u) { rawUids[u] = 1; });
+  var rawByUid = simple.rawByUid;
+  Object.keys(wd.rawByUid).forEach(function (u) { rawByUid[u] = wd.rawByUid[u]; });
 
   // de-dupe: the same role can appear on two systems
   var seenKey = {}, deduped = [];
@@ -513,30 +526,43 @@ function refresh() {
     }), { widths: [330, 170, 220, 85, 90, 110] });
 
   // ---- Closed: anything previously live that stopped coming back
-  var closedRows = [];
-  Object.keys(prevClosed).forEach(function (uid) {
-    if (liveUids[uid]) return;
-    closedRows.push(prevClosed[uid].row);
-  });
-  Object.keys(prevActive).forEach(function (uid) {
-    if (liveUids[uid] || prevClosed[uid]) return;
-    // Still on the board, just no longer matching (usually a filter change).
-    // That is not a closure, so don't report it as one.
-    if (rawUids[uid]) return;
-    var prev = prevActive[uid], row = prev.row, h = prev.hdr;
+  var closedRows = [], nRemoved = 0, nAged = 0;
+
+  function closedRow_(prev, uid, reason, lastSeen) {
+    var h = prev.hdr, row = prev.row;
     function get(name) { var i = h.indexOf(name); return i >= 0 ? row[i] : ''; }
     var fs = prev.firstSeen || '';
-    var days = '';
-    if (fs) days = daysBetween_(today_(), new Date(fs));
-    closedRows.push(TRACK.map(function (c) { return prev[c]; }).concat([
-      get('Title'), get('Company'), get('Location'), fs, todayStr, days,
+    var days = fs ? daysBetween_(new Date(lastSeen), new Date(fs)) : '';
+    return TRACK.map(function (c) { return prev[c]; }).concat([
+      get('Title'), get('Company'), get('Location'), reason, fs, lastSeen, days,
       get('Source'), get('Link'), uid
-    ]));
+    ]);
+  }
+
+  // already closed: rebuild by header name, so rows written under an older
+  // column layout still line up
+  Object.keys(prevClosed).forEach(function (uid) {
+    if (liveUids[uid]) return;
+    var prev = prevClosed[uid], h = prev.hdr, row = prev.row;
+    function get(name) { var i = h.indexOf(name); return i >= 0 ? row[i] : ''; }
+    var reason = get('Reason') || departureReason_(rawByUid[uid]) || 'Removed from board';
+    var last = String(get('Last Seen') || todayStr);
+    closedRows.push(closedRow_(prev, uid, reason, last));
+    if (String(reason).indexOf('Aged') === 0) nAged++; else nRemoved++;
   });
+
+  Object.keys(prevActive).forEach(function (uid) {
+    if (liveUids[uid] || prevClosed[uid]) return;
+    var reason = departureReason_(rawByUid[uid]);
+    if (!reason) return;   // still listed, just no longer matching
+    closedRows.push(closedRow_(prevActive[uid], uid, reason, todayStr));
+    if (reason.indexOf('Aged') === 0) nAged++; else nRemoved++;
+  });
+
   writeTab_(ss, 'Closed',
-    TRACK.concat(['Title', 'Company', 'Location', 'First Seen', 'Last Seen',
-                  'Days Live', 'Source', 'Link', 'UID']),
-    closedRows, { widths: [90, 70, 90, 220, 330, 170, 210, 85, 85, 75, 90, 110, 260] });
+    TRACK.concat(['Title', 'Company', 'Location', 'Reason', 'First Seen',
+                  'Last Seen', 'Days Live', 'Source', 'Link', 'UID']),
+    closedRows, { widths: [90, 70, 90, 220, 330, 170, 210, 150, 85, 85, 75, 90, 110, 260] });
 
   // ---- Boards
   boardRows.sort(function (a, b) { return b[4] - a[4] || String(a[0]).localeCompare(String(b[0])); });
@@ -561,7 +587,8 @@ function refresh() {
     ['Postings scanned', boardRows.reduce(function (a, b) { return a + b[3]; }, 0)],
     ['Matching (after de-dupe)', deduped.length],
     ['New since last run', fresh.length],
-    ['Closed / removed', closedRows.length],
+    ['Closed - removed from board', nRemoved],
+    ['Closed - aged out', nAged],
     ['Run time (s)', Math.round((new Date() - t0) / 1000)]
   ], { widths: [230, 380] });
 
